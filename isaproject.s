@@ -32,8 +32,26 @@
 // r0 has ia - address of null terminated array
 // sum_array is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
+
+// implements this portion of the C code
+// int sum_array(int *ia){		ia is r0
+//	int s = 0;			r1 = s
+//	while (*ia != 0){		cmp r1 to #0, if lessthan/= go to return
+//		s += *ia;		add r1 to r2
+//		ia++;			post increment to next item in array
+//		}
+//	return s;			return s
+//	}
 .label sum_array
-mov r0, 2          // hardcode to return a 2
+.label sum_array_breakpoint
+//mov r0, 2          // hardcode to return a 2
+ldr r1, [r0],#4      // stores ia[i] in r1, post increments after we store
+cmp r1, #0	     // compares ia[i] to 0
+ble sum_array_return // if ia[i] == 0, branches to return function
+add r2, r2, r1	     // adds r2 and r1, puts it in r2
+bal sum_array	     // continues loop until ia[i] == 0
+.label sum_array_return
+mov r0, r2	   // puts r2 in r0 to return the sum
 mov r15, r14       // return
 
 .text 0x400
@@ -52,6 +70,14 @@ mov r15, r14       // return
 // r0 has ia - address of null terminated array
 // numelems is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
+
+// implements this section of C code
+// int numelems(int *ia){
+//	int c = 0;
+//	while (*ia++ != 0)
+//		c++;
+//	return c;
+//	}
 .label numelems
 mov r0, 0xa        // hardcode to return a 10
 .label break
@@ -104,7 +130,23 @@ mov r15, r14       // return
 //     cav = cmp_arrays(sia, sib);
 // }
 .label main
-sbi sp, sp, 16     // allocate space for stack
+// int ia[] = {1,2,3,4}				// silly little test code to test functions
+//sub r13, r13, #24
+//mov r2, #1
+//str r2, [r13, #0] // ia[0] = 1
+//mov r2, #2
+//str r2, [r13, #4] // ia[1] = 2
+//mov r2, #3
+//str r2, [r13, #8] // ia[2] = 3
+//mov r2, #4
+//str r2, [r13, #12]// ia[3] = 4
+//mov r2, #0
+//str r2, [r13, #40]
+//str r14, [r13, #44]
+//mov r0, r13
+//mov r3, #10 // "size" of array		// end of my silly little test code
+//bal sum_array
+sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
                    // [sp,4] is int n
                    // [sp,8] is int sm1
