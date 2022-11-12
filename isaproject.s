@@ -52,6 +52,8 @@ add r2, r2, r1	     // adds r2 and r1, puts it in r2
 bal sum_array	     // continues loop until ia[i] == 0
 .label sum_array_return
 mov r0, r2	   // puts r2 in r0 to return the sum
+mov r2, #0         // resets r2 to 0
+mov r1, #0         // moves 0 into r1
 mov r15, r14       // return
 
 .text 0x400
@@ -79,7 +81,18 @@ mov r15, r14       // return
 //	return c;
 //	}
 .label numelems
-mov r0, 0xa        // hardcode to return a 10
+//mov r0, 0xa        // hardcode to return a 10
+ldr r1, [r0],#4      // stores ia[i] into r1, post increment 4
+add r2, r2, #1       // adds 1 to r2 for counter (ask if we include zero in our count)
+cmp r1, #0	     // compares r1 to number 0
+ble numelems_final   // if it is equal to 0, send to final and end loop
+//add r2, r2, #1     // uncomment if we do not include last 0
+bal numelems	     // else, continue loop
+.label numelems_final
+mov r0, r2           // puts r2 into r0 to return the proper number
+mov r2, #0           // puts 0 into r2
+mov r1, #0           // puts 0 into r1
+mov r15, r14
 .label break
 mov r15, r14       // return
 
