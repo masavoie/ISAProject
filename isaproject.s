@@ -61,6 +61,14 @@ mov r15, r14       // return
 // r1 has ia1 - address of null terminated array
 // cmp_arrays must allocate a stack
 // Save lr on stack and allocate space for local vars
+//
+// implements this section of C code
+// int cmp_arrays(int *ia1, int *ia2){
+//	int s1 = sum_array(ia1);
+//	int s2 = sum_array(ia2);
+//	printf("s1: %d, s2: %d\n", s1, s2);
+//	return s1 == s2 ? 0: (s1 > s2 ? 1 : -1);
+//	}
 .label cmp_arrays
                    // Allocate stack
                    // Call sum_array two times
@@ -93,6 +101,7 @@ mov r0, r2           // puts r2 into r0 to return the proper number
 mov r2, #0           // puts 0 into r2
 mov r1, #0           // puts 0 into r1
 mov r15, r14
+
 .label break
 mov r15, r14       // return
 
@@ -100,9 +109,22 @@ mov r15, r14       // return
 // r0 has ia - address of null terminated array
 // sort must allocate a stack
 // Save lr on stack and allocate space for local vars
+//
+// implements this C code
+// void sort(int *ia){
+//	for (int i = 0; i < 2; i++){
+//		for (int j = 0; j < s-1-i; j++){
+//			if (ia[j] > ia[j+1]){
+//				int t = ia[j];
+//				ia[j] = ia[j+1];
+//				ia[j+1] = t;
+//				} closes if loop
+//			} closes inner for loop
+//		} closes outer for loop
+//	} ends function
 .label sort
                    // Allocate stack
-// blr numelems    // count elements in ia[]
+blr numelems       // count elements in ia[]
                    // create nested loops to sort
 		   // Deallocate stack
 mov r15, r14       // return - sort is a void function
@@ -111,9 +133,21 @@ mov r15, r14       // return - sort is a void function
 // r0 has ia - address of null terminated array
 // smallest must allocate a stack
 // Save lr on stack and allocate space for local vars
+//
+// implements this C code
+// int smallest(int *ia){
+//	int s = numelems(ia);
+//	int sm = *ia;
+//	for (int *p = ia; p < ia+s; p++){
+//		if (*p < sm){
+//			sm = *p;
+//		} closes if loop
+//	} closes for loop
+//	return sm;
+//	} ends function
 .label smallest
-                   // Allocate stack
-// blr numelems    // count elements in ia[]
+sbi sp, sp, 16     // Allocate stack, sb = r13
+blr numelems       // count elements in ia[]
                    // create loop to find smallest
 mov r0, 2          // hardcode to return a 2
 		   // Deallocate stack
@@ -123,6 +157,16 @@ mov r15, r14       // return
 // r0 has an integer
 // factorial must allocate a stack
 // Save lr on stack and allocate space for local vars
+//
+// implements this C code
+// int factorial(int n){
+//	if (n == 1){
+//		return 1;
+//	}
+//	else{
+//		return n * factorial(n-1);
+//	}closes else
+//	}closes funciton
 .label factorial
                    // Allocate stack
 		   // implement algorithm
@@ -159,6 +203,7 @@ mov r15, r14       // return
 //mov r0, r13
 //mov r3, #10 // "size" of array		// end of my silly little test code
 //bal sum_array
+//bal numelems
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
                    // [sp,4] is int n
