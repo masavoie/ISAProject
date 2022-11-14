@@ -28,7 +28,7 @@
 .string //sia[%d]: %d
 .label fmt2
 .string //Something bad
-.text 0x300
+.text 0x300 //sum_array
 // r0 has ia - address of null terminated array
 // sum_array is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
@@ -56,7 +56,7 @@ mov r2, #0         // resets r2 to 0
 mov r1, #0         // moves 0 into r1
 mov r15, r14       // return
 
-.text 0x400
+.text 0x400 //cmp_arrays
 // r0 has ia1 - address of null terminated array
 // r1 has ia1 - address of null terminated array
 // cmp_arrays must allocate a stack
@@ -70,13 +70,22 @@ mov r15, r14       // return
 //	return s1 == s2 ? 0: (s1 > s2 ? 1 : -1);
 //	}
 .label cmp_arrays
-                   // Allocate stack
-                   // Call sum_array two times
-mov r0, -1         // hardcode to return -1
+sbi sp, sp, 16     // Allocate stack, sp=r13
+bal sum_array	   // first call to sum_array		// call sum_array two times
+bal sum_array      // second call to sum_array
+cmp r0, r1
+beq cmp_equals     // if equal branch to .equals label
+bne cmp_not_equal  // else branch to this one instead
+.label cmp_equals
+mov r0, 1          // puts 1 into r0 to return 1, or that they are equal
+bal cmp_return     // skips the cmp_not_equal
+.label cmp_not_equal
+mov r0, -1         // hardcode to return -1 for not equal
 		   // Deallocate stack
+.label cmp_return
 mov r15, r14       // return
 
-.text 0x500
+.text 0x500 //numelems
 // r0 has ia - address of null terminated array
 // numelems is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
@@ -105,7 +114,7 @@ mov r15, r14
 .label break
 mov r15, r14       // return
 
-.text 0x600
+.text 0x600 //sort
 // r0 has ia - address of null terminated array
 // sort must allocate a stack
 // Save lr on stack and allocate space for local vars
@@ -123,9 +132,12 @@ mov r15, r14       // return
 //		} closes outer for loop
 //	} ends function
 .label sort
-                   // Allocate stack
+sbi sp, sp, 16     // Allocate stack
 blr numelems       // count elements in ia[]
                    // create nested loops to sort
+.label loop
+ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4
+
 		   // Deallocate stack
 mov r15, r14       // return - sort is a void function
 
