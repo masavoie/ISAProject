@@ -28,7 +28,8 @@
 .string //sia[%d]: %d
 .label fmt2
 .string //Something bad
-.text 0x300 //sum_array DONE
+.text 0x300 
+//sum_array DONE
 // r0 has ia - address of null terminated array
 // sum_array is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
@@ -43,7 +44,6 @@
 //	return s;			return s
 //	}
 .label sum_array
-.label sum_array_breakpoint
 //mov r0, 2          // hardcode to return a 2
 ldr r1, [r0],#4      // stores ia[i] in r1, post increments after we store
 cmp r1, #0	     // compares ia[i] to 0
@@ -56,7 +56,8 @@ mov r2, #0         // resets r2 to 0
 mov r1, #0         // moves 0 into r1
 mov r15, r14       // return
 
-.text 0x400 //cmp_arrays
+.text 0x400 
+//cmp_arrays
 // r0 has ia1 - address of null terminated array
 // r1 has ia1 - address of null terminated array
 // cmp_arrays must allocate a stack
@@ -70,6 +71,7 @@ mov r15, r14       // return
 //	return s1 == s2 ? 0: (s1 > s2 ? 1 : -1);
 //	}
 .label cmp_arrays
+mov r0, #1
 sbi sp, sp, 16     // Allocate stack, sp=r13
 bal sum_array	   // first call to sum_array		// call sum_array two times
 bal sum_array      // second call to sum_array
@@ -85,7 +87,8 @@ mov r0, -1         // hardcode to return -1 for not equal
 .label cmp_return
 mov r15, r14       // return
 
-.text 0x500 //numelems DONE
+.text 0x500 
+//numelems DONE
 // r0 has ia - address of null terminated array
 // numelems is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
@@ -100,7 +103,6 @@ mov r15, r14       // return
 .label numelems
 //mov r0, 0xa        // hardcode to return a 10
 ldr r1, [r0],#4      // stores ia[i] into r1, post increment 4
-//add r2, r2, #1       // adds 1 to r2 for counter (ask if we include zero in our count)
 cmp r1, #0	     // compares r1 to number 0
 ble numelems_final   // if it is equal to 0, send to final and end loop
 add r2, r2, #1     // uncomment if we do not include last 0
@@ -114,7 +116,8 @@ bal break
 .label break
 mov r15, r14       // return
 
-.text 0x600 //sort
+.text 0x600 
+//sort
 // r0 has ia - address of null terminated array
 // sort must allocate a stack
 // Save lr on stack and allocate space for local vars
@@ -196,26 +199,25 @@ mov r15, r14       // return
 //         printf("ia[%d]: %d", i, sia[i]);
 //     n = numelems(sia);
 //     sm1 = smallest(sia);
-//     cav = cmp_arrays(sia, sib);
+//     cav =cmp_arrays(sia, sib);
 // }
 .label main
 // int ia[] = {1,2,3,4}				// silly little test code to test functions
-//sub r13, r13, #24
-//mov r2, #1
-//str r2, [r13, #0] // ia[0] = 1
-//mov r2, #2
-//str r2, [r13, #4] // ia[1] = 2
-//mov r2, #3
-//str r2, [r13, #8] // ia[2] = 3
-//mov r2, #4
-//str r2, [r13, #12]// ia[3] = 4
-//mov r2, #0
-//str r2, [r13, #40]
-//str r14, [r13, #44]
-//mov r0, r13
+sub r13, r13, #24
+mov r2, #1
+str r2, [r13, #0] // ia[0] = 1
+mov r2, #2
+str r2, [r13, #4] // ia[1] = 2
+mov r2, #3
+str r2, [r13, #8] // ia[2] = 3
+mov r2, #4
+str r2, [r13, #12]// ia[3] = 4
+mov r2, #0
+str r2, [r13, #40]
+str r14, [r13, #44]
+mov r0, r13
 //mov r3, #10 // "size" of array		// end of my silly little test code
-//bal sum_array
-//bal numelems
+bal sum_array
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
                    // [sp,4] is int n
