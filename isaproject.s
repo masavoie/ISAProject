@@ -28,7 +28,7 @@
 .string //sia[%d]: %d
 .label fmt2
 .string //Something bad
-.text 0x300 //sum_array
+.text 0x300 //sum_array DONE
 // r0 has ia - address of null terminated array
 // sum_array is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
@@ -85,7 +85,7 @@ mov r0, -1         // hardcode to return -1 for not equal
 .label cmp_return
 mov r15, r14       // return
 
-.text 0x500 //numelems
+.text 0x500 //numelems DONE
 // r0 has ia - address of null terminated array
 // numelems is a leaf function
 // If you only use r0, r1, r2, r3; you do not need a stack
@@ -109,7 +109,7 @@ bal numelems	     // else, continue loop
 mov r0, r2           // puts r2 into r0 to return the proper number
 mov r2, #0           // puts 0 into r2
 mov r1, #0           // puts 0 into r1
-mov r15, r14
+bal break
 
 .label break
 mov r15, r14       // return
@@ -257,15 +257,17 @@ bal loop4times
 .label end_loop4times
 // int n = numelems(sia);
 mva r0, sia        // put address of sia in r0
+.label num_break
 blr numelems       // n = numelems(sia)
 str r0, [sp, 4]
 // int sm1 = smallest(sia);
 mva r0, sia        // put address of sia in r0
-blr smallest       // sm1 = smallest(sia)
+//blr smallest       // sm1 = smallest(sia)
 str r0, [sp, 8]    // store return value in sm1
 // cav = cmp_arrays_sia, sib);
 mva r0, sia        // put address of sia in r0
 mva r1, sib        // put address of sib in r1
+.label break_main
 blr cmp_arrays
 str r0, [sp, 0]
 // Do not deallocate stack.
