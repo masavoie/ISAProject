@@ -111,13 +111,13 @@ ble numelems_final   // if it is equal to 0, send to final and end loop
 add r2, r2, #1     // uncomment if we do not include last 0
 bal numelems	     // else, continue loop
 .label numelems_final
-mov r0, r2           // puts r2 into r0 to return the proper number
-mov r2, #0           // puts 0 into r2
+//mov r0, r2           // puts r2 into r0 to return the proper number
+//mov r2, #0           // puts 0 into r2
 mov r1, #0           // puts 0 into r1
 bal break
 
 .label break
-//mov r15, r14       // return
+mov r15, r14       // return
 
 .text 0x600 
 //sort
@@ -165,11 +165,30 @@ mov r15, r14       // return - sort is a void function
 //	} ends function
 .label smallest
 sbi sp, sp, 16     // Allocate stack, sb = r13
+//str r4, [r13, #8]  // save r4 on stack
+//str r5, [r13, #12] // save r5 on stack
+//str r14, [r13, #16]// save lr on stasck
+
 blr numelems       // count elements in ia[]
+//ldr r4, [r13, #8]  // restores r4
+//ldr r5, [r13, #12] // restores r5
+//ldr r14, [r13, #16]// restores lr
+mov r3, r2	   // puts count into r3
+ldr r1, [r0],#4	   
+//str r1, [r13, #0]  // puts ia[0] as the smallest, since that currently is
 .label small_loop  // create loop to find smallest
-cmp r0, r1
-add r2, r2, #1     // starts count
+ldr r2, [r0],#4		   // loads ia[i] into register 0, post increment #4
+cmp r2, r1	   // of r1 < r2
+bgt larger	   // branches to larger if r0 is greater than r1
+mov r1, r0	   // put r0 into r1
+.label larger
+add r5, r5, #1     // starts count
+cmp r5, r3         // if r2 < r3
+blt small_loop
 //mov r0, 2          // hardcode to return a 2
+mov r2, #0	   // puts 0 in r2
+mov r0, r1	   // puts the smallest value into r0
+mov r1, #0
 add sp, sp, 16	   // Deallocates stack by adding the value back to sp
 mov r15, r14       // return
 
@@ -209,7 +228,7 @@ mov r15, r14       // return
 .label main
 // int ia[] = {1,2,3,4}				// silly little test code to test functions
 sub r13, r13, #48
-mov r2, #1
+mov r2, #5
 str r2, [r13, #0] // ia[0] = 1
 mov r2, #2
 str r2, [r13, #4] // ia[1] = 2
@@ -221,9 +240,9 @@ mov r2, #0
 str r2, [r13, #40]
 str r14, [r13, #44]
 mov r0, r13
-mov r1, r13
+//mov r1, r13
 //mov r3, #10 // "size" of array		// end of my silly little test code
-bal cmp_arrays
+bal smallest
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
                    // [sp,4] is int n
