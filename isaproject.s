@@ -71,10 +71,13 @@ mov r15, r14       // return
 //	return s1 == s2 ? 0: (s1 > s2 ? 1 : -1);
 //	}
 .label cmp_arrays
-mov r0, #1
+//mov r0, #1
 sbi sp, sp, 16     // Allocate stack, sp=r13
-bal sum_array	   // first call to sum_array		// call sum_array two times
-bal sum_array      // second call to sum_array
+blr sum_array	   // first call to sum_array for the first array // call sum_array two times
+mov r3, r0	   // puts answer of sum_array into r3, this will be our s1
+mov r0, r1	   // put second array into r0
+blr sum_array      // second call to sum_array for second array
+mov r1, r3
 cmp r0, r1
 beq cmp_equals     // if equal branch to .equals label
 bne cmp_not_equal  // else branch to this one instead
@@ -83,7 +86,7 @@ mov r0, 1          // puts 1 into r0 to return 1, or that they are equal
 bal cmp_return     // skips the cmp_not_equal
 .label cmp_not_equal
 mov r0, -1         // hardcode to return -1 for not equal
-		   // Deallocate stack
+add sp, sp, 16	   // Deallocate stack by adding the values back to sp
 .label cmp_return
 mov r15, r14       // return
 
@@ -114,7 +117,7 @@ mov r1, #0           // puts 0 into r1
 bal break
 
 .label break
-mov r15, r14       // return
+//mov r15, r14       // return
 
 .text 0x600 
 //sort
@@ -163,9 +166,11 @@ mov r15, r14       // return - sort is a void function
 .label smallest
 sbi sp, sp, 16     // Allocate stack, sb = r13
 blr numelems       // count elements in ia[]
-                   // create loop to find smallest
-mov r0, 2          // hardcode to return a 2
-		   // Deallocate stack
+.label small_loop  // create loop to find smallest
+cmp r0, r1
+add r2, r2, #1     // starts count
+//mov r0, 2          // hardcode to return a 2
+add sp, sp, 16	   // Deallocates stack by adding the value back to sp
 mov r15, r14       // return
 
 .text 0x800
@@ -203,7 +208,7 @@ mov r15, r14       // return
 // }
 .label main
 // int ia[] = {1,2,3,4}				// silly little test code to test functions
-sub r13, r13, #24
+sub r13, r13, #48
 mov r2, #1
 str r2, [r13, #0] // ia[0] = 1
 mov r2, #2
@@ -216,8 +221,9 @@ mov r2, #0
 str r2, [r13, #40]
 str r14, [r13, #44]
 mov r0, r13
+mov r1, r13
 //mov r3, #10 // "size" of array		// end of my silly little test code
-bal sum_array
+bal cmp_arrays
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
                    // [sp,4] is int n
