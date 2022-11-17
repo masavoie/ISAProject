@@ -165,14 +165,8 @@ mov r15, r14       // return - sort is a void function
 //	} ends function
 .label smallest
 sbi sp, sp, 16     // Allocate stack, sb = r13
-//str r4, [r13, #8]  // save r4 on stack
-//str r5, [r13, #12] // save r5 on stack
-//str r14, [r13, #16]// save lr on stasck
-
 blr numelems       // count elements in ia[]
-//ldr r4, [r13, #8]  // restores r4
-//ldr r5, [r13, #12] // restores r5
-//ldr r14, [r13, #16]// restores lr
+mov r0, r13
 mov r3, r2	   // puts count into r3
 ldr r1, [r0],#4	   
 //str r1, [r13, #0]  // puts ia[0] as the smallest, since that currently is
