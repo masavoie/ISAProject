@@ -168,7 +168,7 @@ sbi sp, sp, 16     // Allocate stack, sb = r13
 blr numelems       // count elements in ia[]
 mov r0, r13
 mov r3, r2	   // puts count into r3
-ldr r1, [r0],#4	   
+ldr r1, [r0],#4
 //str r1, [r13, #0]  // puts ia[0] as the smallest, since that currently is
 .label small_loop  // create loop to find smallest
 ldr r2, [r0],#4		   // loads ia[i] into register 0, post increment #4
@@ -201,11 +201,21 @@ mov r15, r14       // return
 //	}closes else
 //	}closes funciton
 .label factorial
-                   // Allocate stack
-		   // implement algorithm
-//blr factorial    // factorial calls itself
-		   // Deallocate stack
-mov r0, 120        // hardcode 5! as return value
+sbi sp, sp, 16                  // Allocate stack
+  // implement algorithm
+cmp r0, #1			//compare r0 to 1 (if(n==1))
+beq fac_return
+str r0, [r13,#0]//store current val
+str lr, [r13,#4]//store link reg
+sub r0, r0, #1 //n-1
+blr factorial    // factorial calls itself
+.label fac_return
+//X
+ldr r1, [r13] //store old val in r1
+ldr lr, [r13,4]//recall link register
+mul r0, r0, r1//(n-1)*n yay commutative prop
+add sp, sp, 16		   // Deallocate stack ||||this may need to go at spot labeled X||||
+//mov r0, 120        // hardcode 5! as return value
 mov r15, r14       // return
 
 .text 0x900
