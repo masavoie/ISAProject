@@ -28,6 +28,24 @@
 .string //sia[%d]: %d
 .label fmt2
 .string //Something bad
+.label fmt3
+.string //cmp_arrays(sia, sib): %d
+.label fmt4
+.string //cmp_arrays(sia, sia): %d
+.label fmt5
+.string //cmp_arrays(ia, sia): %d
+.label fmt6
+.string //ia[%d]: %d
+.label fmt7
+.string //smallest(ia): %d
+.label fmt8
+.string //smallest(sia): %d
+.label fmt9
+.string //Nice sort and smallest
+.label fmt10
+.string //factorial(4) ia: %d
+.label fmt11
+.string //factorial(7) ia: %d
 .text 0x300 
 //sum_array DONE
 // r0 has ia - address of null terminated array
@@ -230,34 +248,33 @@ mov r15, r14       // return
 // }
 
 // needs to implement the following:
-// 	printf("cmp_arrays(sia, sib): %d\n", cav);
 //	sib[0] = 4;
-//	cav = cmp_arrays(sia, sib);
-//	printf("cmp_arrays(sia, sib): %d\n", cav);
+//	cav = cmp_arrays(sia, sia);
+//	printf("cmp_arrays(sia, sia): %d\n", cav);	fmt4
 //	cav = cmp_arrays(ia, sib);
-//	printf("cmp_arrays(ia, sia): %d\n", cav);
+//	printf("cmp_arrays(ia, sia): %d\n", cav);	fmt5
 //	sort(ia);
 //	n = numelemss(ia);
 //	for (int i = 0; i < n ; i++){
-//		printf("ia[%d]: %d\n", 1, sia[i]);
+//		printf("ia[%d]: %d\n", 1, sia[i]);	fmt6
 //	}
 //	sm1 = smallest(ia);
 //	sm2 = smallest(sia);
-//	printf("smallest(ia): %d\n", sm1);
-//	printf("smallest(sia): %d\n", sm2);
+//	printf("smallest(ia): %d\n", sm1);		fmt7
+//	printf("smallest(sia): %d\n", sm2);		fmt8
 //	if (sm1 != ia[0]){
-//		printf("Something bad\n");
+//		printf("Something bad\n");		fmt2
 //	}else{
-//		printf("Nice sort and smallest\n");
+//		printf("Nice sort and smallest\n");	fmt9
 //	}if(sm2 != sia[0]){
-//		printf("Something bad\n");
+//		printf("Something bad\n");		fmt2
 //	}else{
-//		printf("Nice sort and smallest\n");
+//		printf("Nice sort and smallest\n");	fmt9
 //	}
 //	n = factorial(4);
-//	printf("factorial(4) ia: %d\n", n);
+//	printf("factorial(4) ia: %d\n", n);		fmt10
 //	n = factorial(7);
-//	printf("factorial(7) ia: %d\n", n);
+//	printf("factorial(7) ia: %d\n", n);		fmt10
 .label main
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
@@ -297,6 +314,7 @@ ldr r3, [r5], 4    // sia[i] to r3
 ker #0x11          // Kernel call to printf
 adi r4, r4, 1      // i++
 bal loop4times
+
 .label end_loop4times
 // int n = numelems(sia);
 mva r0, sia        // put address of sia in r0
@@ -313,6 +331,9 @@ mva r1, sib        // put address of sib in r1
 .label break_main
 blr cmp_arrays
 str r0, [sp, 0]
+mva r0, fmt3	   // r1 is address of format string, r0 will 
+blr printf	   // printf(cmp_arrays(sia, sib): %d)
+
 // Do not deallocate stack.
 // This leaves r13 with an address that can be used to dump memory
 // > d 0x4ff0 
