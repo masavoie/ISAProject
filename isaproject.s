@@ -28,6 +28,24 @@
 .string //sia[%d]: %d
 .label fmt2
 .string //Something bad
+.label fmt3
+.string //cmp_arrays(sia, sib): %d
+.label fmt4
+.string //cmp_arrays(sia, sia): %d
+.label fmt5
+.string //cmp_arrays(ia, sia): %d
+.label fmt6
+.string //ia[%d]: %d
+.label fmt7
+.string //smallest(ia): %d
+.label fmt8
+.string //smallest(sia): %d
+.label fmt9
+.string //Nice sort and smallest
+.label fmt10
+.string //factorial(4) ia: %d
+.label fmt11
+.string //factorial(7) ia: %d
 .text 0x300 
 //sum_array DONE
 // r0 has ia - address of null terminated array
@@ -175,15 +193,17 @@ sbi sp, sp, 16     // Allocate stack, sb = r13
 str r0, [r13]	//gusty add
 str lr, [r13,4]//gusty add
 blr numelems       // count elements in ia[]
+<<<<<<< HEAD
 //mov r0, r13	   // hopefully restores r0 to its first position
 ldr lr, [r13,4]//gusty add
 mov r0, [r13]
+=======
+>>>>>>> 9cc9a3c1d5161aaac7ee7fb57131248433aa267c
 add sp, sp, 16	   // reallocates stack
 mov r0, r13	   // hopefully restores r0 to first position
 mov r3, r2	   // puts count into r3
 ldr r1, [r0],#4
 add r5, r5, #1	   // will technically be the first count
-//str r1, [r13, #0]  // puts ia[0] as the smallest, since that currently is
 .label small_loop  // create loop to find smallest
 ldr r2, [r0],#4		   // loads ia[i] into register 0, post increment #4
 cmp r2, r1	   // of r1 < r2
@@ -193,7 +213,6 @@ mov r1, r2	   // put r0 into r1
 add r5, r5, #1     // starts count
 cmp r5, r3         // if r2 < r3
 blt small_loop
-//mov r0, 2          // hardcode to return a 2
 mov r2, #0	   // puts 0 in r2
 mov r0, r1	   // puts the smallest value into r0
 mov r1, #0
@@ -242,24 +261,36 @@ mov r15, r14       // return
 //     sm1 = smallest(sia);
 //     cav =cmp_arrays(sia, sib);
 // }
+
+// needs to implement the following:
+//	sib[0] = 4;
+//	cav = cmp_arrays(sia, sia);
+//	printf("cmp_arrays(sia, sia): %d\n", cav);	fmt4
+//	cav = cmp_arrays(ia, sib);
+//	printf("cmp_arrays(ia, sia): %d\n", cav);	fmt5
+//	sort(ia);
+//	n = numelemss(ia);
+//	for (int i = 0; i < n ; i++){
+//		printf("ia[%d]: %d\n", 1, sia[i]);	fmt6
+//	}
+//	sm1 = smallest(ia);
+//	sm2 = smallest(sia);
+//	printf("smallest(ia): %d\n", sm1);		fmt7
+//	printf("smallest(sia): %d\n", sm2);		fmt8
+//	if (sm1 != ia[0]){
+//		printf("Something bad\n");		fmt2
+//	}else{
+//		printf("Nice sort and smallest\n");	fmt9
+//	}if(sm2 != sia[0]){
+//		printf("Something bad\n");		fmt2
+//	}else{
+//		printf("Nice sort and smallest\n");	fmt9
+//	}
+//	n = factorial(4);
+//	printf("factorial(4) ia: %d\n", n);		fmt10
+//	n = factorial(7);
+//	printf("factorial(7) ia: %d\n", n);		fmt10
 .label main
-// int ia[] = {1,2,3,4}				// silly little test code to test functions
-sub r13, r13, #48
-mov r2, #5
-str r2, [r13, #0] // ia[0] = 1
-mov r2, #2
-str r2, [r13, #4] // ia[1] = 2
-mov r2, #3
-str r2, [r13, #8] // ia[2] = 3
-mov r2, #4
-str r2, [r13, #12]// ia[3] = 4
-mov r2, #0
-str r2, [r13, #40]
-str r14, [r13, #44]
-mov r0, r13
-//mov r1, r13
-//mov r3, #10 // "size" of array		// end of my silly little test code
-bal smallest
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
                    // [sp,4] is int n
@@ -298,6 +329,7 @@ ldr r3, [r5], 4    // sia[i] to r3
 ker #0x11          // Kernel call to printf
 adi r4, r4, 1      // i++
 bal loop4times
+
 .label end_loop4times
 // int n = numelems(sia);
 mva r0, sia        // put address of sia in r0
@@ -314,6 +346,9 @@ mva r1, sib        // put address of sib in r1
 .label break_main
 blr cmp_arrays
 str r0, [sp, 0]
+mva r0, fmt3	   // r1 is address of format string, r0 will 
+blr printf	   // printf(cmp_arrays(sia, sib): %d)
+
 // Do not deallocate stack.
 // This leaves r13 with an address that can be used to dump memory
 // > d 0x4ff0 
