@@ -228,24 +228,37 @@ mov r15, r14       // return
 //     sm1 = smallest(sia);
 //     cav =cmp_arrays(sia, sib);
 // }
+
+// needs to implement the following:
+// 	printf("cmp_arrays(sia, sib): %d\n", cav);
+//	sib[0] = 4;
+//	cav = cmp_arrays(sia, sib);
+//	printf("cmp_arrays(sia, sib): %d\n", cav);
+//	cav = cmp_arrays(ia, sib);
+//	printf("cmp_arrays(ia, sia): %d\n", cav);
+//	sort(ia);
+//	n = numelemss(ia);
+//	for (int i = 0; i < n ; i++){
+//		printf("ia[%d]: %d\n", 1, sia[i]);
+//	}
+//	sm1 = smallest(ia);
+//	sm2 = smallest(sia);
+//	printf("smallest(ia): %d\n", sm1);
+//	printf("smallest(sia): %d\n", sm2);
+//	if (sm1 != ia[0]){
+//		printf("Something bad\n");
+//	}else{
+//		printf("Nice sort and smallest\n");
+//	}if(sm2 != sia[0]){
+//		printf("Something bad\n");
+//	}else{
+//		printf("Nice sort and smallest\n");
+//	}
+//	n = factorial(4);
+//	printf("factorial(4) ia: %d\n", n);
+//	n = factorial(7);
+//	printf("factorial(7) ia: %d\n", n);
 .label main
-// int ia[] = {1,2,3,4}				// silly little test code to test functions
-sub r13, r13, #48
-mov r2, #5
-str r2, [r13, #0] // ia[0] = 1
-mov r2, #2
-str r2, [r13, #4] // ia[1] = 2
-mov r2, #3
-str r2, [r13, #8] // ia[2] = 3
-mov r2, #4
-str r2, [r13, #12]// ia[3] = 4
-mov r2, #0
-str r2, [r13, #40]
-str r14, [r13, #44]
-mov r0, r13
-//mov r1, r13
-//mov r3, #10 // "size" of array		// end of my silly little test code
-bal smallest
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
                    // [sp,4] is int n
