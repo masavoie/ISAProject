@@ -193,12 +193,12 @@ sbi sp, sp, 16     // Allocate stack, sb = r13
 str r0, [r13]	//gusty add
 str lr, [r13,4]//gusty add
 blr numelems       // count elements in ia[]
-<<<<<<< HEAD
+
 //mov r0, r13	   // hopefully restores r0 to its first position
 ldr lr, [r13,4]//gusty add
 mov r0, [r13]
-=======
->>>>>>> 9cc9a3c1d5161aaac7ee7fb57131248433aa267c
+
+
 add sp, sp, 16	   // reallocates stack
 mov r0, r13	   // hopefully restores r0 to first position
 mov r3, r2	   // puts count into r3
