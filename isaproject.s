@@ -166,13 +166,11 @@ mov r15, r14       // return - sort is a void function
 .label smallest
 sbi sp, sp, 16     // Allocate stack, sb = r13
 blr numelems       // count elements in ia[]
-//mov r0, r13	   // hopefully restores r0 to its first position
 add sp, sp, 16	   // reallocates stack
 mov r0, r13	   // hopefully restores r0 to first position
 mov r3, r2	   // puts count into r3
 ldr r1, [r0],#4
 add r5, r5, #1	   // will technically be the first count
-//str r1, [r13, #0]  // puts ia[0] as the smallest, since that currently is
 .label small_loop  // create loop to find smallest
 ldr r2, [r0],#4		   // loads ia[i] into register 0, post increment #4
 cmp r2, r1	   // of r1 < r2
@@ -182,7 +180,6 @@ mov r1, r2	   // put r0 into r1
 add r5, r5, #1     // starts count
 cmp r5, r3         // if r2 < r3
 blt small_loop
-//mov r0, 2          // hardcode to return a 2
 mov r2, #0	   // puts 0 in r2
 mov r0, r1	   // puts the smallest value into r0
 mov r1, #0
