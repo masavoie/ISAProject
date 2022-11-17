@@ -98,7 +98,7 @@ mov r15, r14       // return
 
 // implements this section of C code
 // int numelems(int *ia){
-//	int c = 0;
+//	int c =   //my phone fell and deleted this code
 //	while (*ia++ != 0)
 //		c++;
 //	return c;
@@ -127,8 +127,9 @@ mov r15, r14       // return
 //
 // implements this C code
 // void sort(int *ia){
-//	for (int i = 0; i < 2; i++){
-//		for (int j = 0; j < s-1-i; j++){
+//	int s = numelems
+//	for (int i = 0; i < s; i++){   //loop
+//		for (int j = 0; j < s-1-i; j++){//loop2
 //			if (ia[j] > ia[j+1]){
 //				int t = ia[j];
 //				ia[j] = ia[j+1];
@@ -137,14 +138,20 @@ mov r15, r14       // return
 //			} closes inner for loop
 //		} closes outer for loop
 //	} ends function
-.label sort
+.label sort			//dude next to me was saying something about checking if the beginning is 0
 sbi sp, sp, 16     // Allocate stack
-blr numelems       // count elements in ia[]
-                   // create nested loops to sort
-.label loop
+blr numelems       // count elements in ia[] count is currently in r2
+add sp, sp, 16	   //smallest reset
+sbi sp, sp 16
+mov r0, r13 	   //reset r0 to beginning of ia[]
+.label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4
+.label loop2
 
-		   // Deallocate stack
+sub r2, r2, #1        //size= size-1
+cmp r2, #0             //if size > 0
+bgt loop		//loop again
+add sp, sp, 16		   // Deallocate stack
 mov r15, r14       // return - sort is a void function
 
 .text 0x700
@@ -165,8 +172,12 @@ mov r15, r14       // return - sort is a void function
 //	} ends function
 .label smallest
 sbi sp, sp, 16     // Allocate stack, sb = r13
+str r0, [r13]	//gusty add
+str lr, [r13,4]//gusty add
 blr numelems       // count elements in ia[]
 //mov r0, r13	   // hopefully restores r0 to its first position
+ldr lr, [r13,4]//gusty add
+mov r0, [r13]
 add sp, sp, 16	   // reallocates stack
 mov r0, r13	   // hopefully restores r0 to first position
 mov r3, r2	   // puts count into r3
@@ -203,10 +214,10 @@ mov r15, r14       // return
 //	}closes else
 //	}closes funciton
 .label factorial
-sbi sp, sp, 16                  // Allocate stack
   // implement algorithm
 cmp r0, #1			//compare r0 to 1 (if(n==1))
 beq fac_return
+sub sp, sp, 16
 str r0, [r13,#0]//store current val
 str lr, [r13,#4]//store link reg
 sub r0, r0, #1 //n-1
