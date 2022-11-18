@@ -170,12 +170,12 @@ ldr r0,[r13,0]     //restore r0 to the beginning index
 ldr lr,[r13,4]     //restore link register
 add sp, sp, 8	   //smallest reset
 sbi sp, sp 16       //allocate new stack
-<<<<<<< HEAD
-=======
+
+
 add sp, sp, 16	   //smallest reset
 sbi sp, sp, 16
 mov r0, r13 	   //reset r0 to beginning of ia[]
->>>>>>> 3e20978ae451cdb72848d3ecfeacf5088292d185
+
 .label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4
 .label loop2
