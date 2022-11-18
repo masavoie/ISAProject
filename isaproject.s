@@ -73,7 +73,9 @@
 //mov r0, 2          // hardcode to return a 2
 ldr r1, [r0],#4      // stores ia[i] in r1, post increments after we store
 cmp r1, #0	     // compares ia[i] to 0
-ble sum_array_return // if ia[i] == 0, branches to return function
+bne sum_array_pt2 // if ia[i] != 0
+bal sum_array_return
+.label sum_array_pt2
 add r2, r2, r1	     // adds r2 and r1, puts it in r2
 bal sum_array	     // continues loop until ia[i] == 0
 .label sum_array_return
@@ -99,21 +101,41 @@ mov r15, r14       // return
 .label cmp_arrays
 //mov r0, #1
 sbi sp, sp, 16     // Allocate stack, sp=r13
+mva r5, r1
+str lr, [r13,4]
 blr sum_array	   // calls sumarray for ia1
-mov r2, r0	   // puts answer into r2
-mva r0, r1	   // moves address of ia2 into r0
+mov r4, r0	   // puts answer into r5
+//ldr lr, [r13,4]	   // moves address of ia2 into r0
+mva r0, r5
+mva r5, #0
 blr sum_array	   // calls sum_array for ia2
-mov r3, r0	   // puts result into r3
-cmp r2, r3	   // compares r2 and r3, the two sum_array
+mov r2, r4	   // puts result for first sum into r2
+mov r3, r0	   // puts result of secondinto r3
+//cmp r2, r3	   // compares r2 and r3, the two sum_array
+// r1 is address of format string
+// r2 is value of first %d
+// r3 is value of second %d
+mva r1, fmt12
+ker #0x11
+.label bp
+cmp r2, r3
 bne not_equals
-mva r0, fmt12	   // moves fmt12 into r0
-blr printf	   // printf(s1: %d, s2: %d)
+//mva r0, fmt12	   // moves fmt12 into r0
+//blr printf	   // printf(s1: %d, s2: %d)
 mov r0, #0	   // puts 0 into r0 to return
-bal skip_not
+blr skip_not
 .label not_equals
 mov r0, #-1	   // puts -1 into r0 to return
+blr skip_not
 .label skip_not
-add sp, sp, 16     // deallocates stack
+//add sp, sp, 16     // deallocates stack
+mov r5, #0
+mov r4, #0
+mov r3, #0
+mov r2, #0
+mov r1, #0
+ldr lr, [r13,4]
+add sp, sp, 16
 mov r15, r14       // return
 
 .text 0x500 
@@ -179,7 +201,7 @@ str r5, [r13, 4]   //will be used as j
 mov r5, #0	   //int j = 0
 str r6, [r13, 8]   //will be used as temp
 str lr, [r13, 12]  //store link ringister
-mov r0, [r13, 16]   //hopefully copies beginning index of r0 into that spot please do this 
+//mov r0, [r13, 16]   //hopefully copies beginning index of r0 into that spot please do this 
 str r7, [r13,20]    //used as s
 .label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4 lets r0 go to address of next item in ia
@@ -214,9 +236,9 @@ str r0, [r13]	//gusty add
 str lr, [r13,4]//gusty add
 blr numelems       // count elements in ia[]
 //mov r0, r13	   // hopefully restores r0 to its first position
-ldr lr, [r13,4]//gusty add
+//ldr lr, [r13,4]//gusty add
 mov r0, r13
-add sp, sp, 16	   // reallocates stack
+//add sp, sp, 16	   // reallocates stack
 mov r0, r13	   // hopefully restores r0 to first position
 mov r3, r2	   // puts count into r3
 ldr r1, [r0],#4
@@ -233,6 +255,8 @@ blt small_loop
 mov r2, #0	   // puts 0 in r2
 mov r0, r1	   // puts the smallest value into r0
 mov r1, #0
+ldr lr, [r13,4]
+add sp, sp, 16
 mov r15, r14       // return
 
 .text 0x800
@@ -333,7 +357,7 @@ str r0, [sp, 8]    // store return value in sm1
 mva r0, sia        // put address of sia in r0
 mva r1, sib        // put address of sib in r1
 .label break_main
-
+mov r2, #0
 blr cmp_arrays
 str r0, [sp, 0]
 mva r0, fmt3	   // r1 is address of format string, r0 will 
@@ -355,7 +379,7 @@ str r0, [sp, 0]
 mva r0, fmt5	   // printf(cmp_arrays(ia, sib):%d);
 blr printf
 mva r0, ia
-blr sort	   // sorts ia
+//blr sort	   // sorts ia
 blr numelems	   // numelems on r0, which should be ia
 str r0, [sp, 4]    // stores numelems in n, which is sp, 4
 mva r4, #0	   // emptying to use a counter
@@ -371,7 +395,7 @@ adi r4, r4, 1	   // i++
 bal for_loop
 .label end_for_loop
 mva r0, sia
-blr sort	   // sorts sia
+//blr sort	   // sorts sia
 blr numelems
 str r0, [sp, 4]    // stores number of elements in sia in n
 mva r4, #0 	   // silly counter
