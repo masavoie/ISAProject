@@ -164,32 +164,59 @@ mov r15, r14       // return
 //			} closes inner for loop
 //		} closes outer for loop
 //	} ends function
-.label sort			//dude next to me was saying something about checking if the beginning is 0
+.label sort
 sbi sp, sp, 8     // Allocate stack
 str r0,[r13,0]    //store beginning index
 str lr,[r13,4]    //store link register
 blr numelems       // count elements in ia[] count is currently in r2
-ldr r0,[r13,0]     //restore r0 to the beginning index
+ldr r0,[r13,0]     
 ldr lr,[r13,4]     //restore link register
 add sp, sp, 8	   //smallest reset
-sbi sp, sp, 24     //allocate new stack
+sbi sp, sp, 36     //allocate new stack
 str r4, [r13, 0]   //will be used as i
 mov r4, #0	   //int i = 0
 str r5, [r13, 4]   //will be used as j
 mov r5, #0	   //int j = 0
 str r6, [r13, 8]   //will be used as temp
 str lr, [r13, 12]  //store link ringister
-mov r0, [r13, 16]   //hopefully copies beginning index of r0 into that spot please do this 
+str r10 [r13, 28] //will hold beginning of ia
+ldr r10, r0		//grab ia[0]
+str r8, [r13, 16]   //this will keep index of ia[j]
+ldr r8, r10          //set ia[j] to ia[0]
 str r7, [r13,20]    //used as s
+str r9, [r13, 24]    //will be used as ia[j]
+str r11, [r13, 32]   //will be used as ia[j+1]
 .label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4 lets r0 go to address of next item in ia
 .label loop2
-
-blt loop2
+ldr r9, [r8],#4   //loads ia[j] into r9, post increment 4 lets r8 go to next item in ia
+ldr r11, [r8]		//loads ia[j+1] into r11
+cmp r9, r11 //compare values
+ble normcase //if r9 <= r11, skip 
+ldr r6, r9 //int t = ia[j]
+ldr r9, r11 //ia[j] = ia[j+1]
+ldr r11, r6 //ia[j+1] = t
+.label normcase
+mov r7, r2 //set r7 to s
+sub r7, r7, 1 //s-1
+sub r7, r7, r4 //s-i
+add r5, r5, 1//j++
+cmp r7, r5//if s is greater than j
+bgt loop2 //loop again
+ldr r8, r10          //set ia[j] to ia[0] reset for next loop2
 add r4, r4, #1        //i++
-cmp r7, r4             //if i<size
+cmp r2, r4             //if i<size
 bgt loop		//loop again
-add sp, sp, 16		   // Deallocate stack
+ldr r4,[r13, 0]
+ldr r5,[r13, 4]
+ldr r6,[r13,8]
+ldr lr,[r13,12]
+ldr r8,[r13,16]
+ldr r7,[r13,20]
+ldr r9,[r13,24]
+ldr r10[r13,28]
+ldr r11[r13,32]
+add sp, sp, 36		   // Deallocate stack
 mov r15, r14       // return - sort is a void function
 
 .text 0x700
