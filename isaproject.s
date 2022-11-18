@@ -232,14 +232,16 @@ mov r15, r14       // return - sort is a void function
 //	} ends function
 .label smallest
 sbi sp, sp, 16     // Allocate stack, sb = r13
-str r0, [r13]	//gusty add
-str lr, [r13,4]//gusty add
+str r0, [r13]	   //gusty add
+str lr, [r13,4]    //gusty add
+mov r2, #0
 blr numelems       // count elements in ia[]
 //mov r0, r13	   // hopefully restores r0 to its first position
 //ldr lr, [r13,4]//gusty add
-mov r0, r13
+//mov r0, r13
 //add sp, sp, 16	   // reallocates stack
-mov r0, r13	   // hopefully restores r0 to first position
+.label bsmall
+ldr r0, [r13]	   // hopefully restores r0 to first position
 mov r3, r2	   // puts count into r3
 ldr r1, [r0],#4
 add r5, r5, #1	   // will technically be the first count
@@ -347,6 +349,7 @@ bal loop4times
 // int n = numelems(sia);
 mva r0, sia        // put address of sia in r0
 .label num_break
+mov r2, #0
 blr numelems       // n = numelems(sia)
 str r0, [sp, 4]
 // int sm1 = smallest(sia);
@@ -380,6 +383,7 @@ mva r0, fmt5	   // printf(cmp_arrays(ia, sib):%d);
 blr printf
 mva r0, ia
 //blr sort	   // sorts ia
+mov r2, #0
 blr numelems	   // numelems on r0, which should be ia
 str r0, [sp, 4]    // stores numelems in n, which is sp, 4
 mva r4, #0	   // emptying to use a counter
