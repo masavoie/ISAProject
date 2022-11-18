@@ -354,7 +354,7 @@ blr numelems       // n = numelems(sia)
 str r0, [sp, 4]
 // int sm1 = smallest(sia);
 mva r0, sia        // put address of sia in r0
-//blr smallest       // sm1 = smallest(sia)
+blr smallest       // sm1 = smallest(sia)
 str r0, [sp, 8]    // store return value in sm1
 // cav = cmp_arrays_sia, sib);
 mva r0, sia        // put address of sia in r0
@@ -382,7 +382,7 @@ str r0, [sp, 0]
 mva r0, fmt5	   // printf(cmp_arrays(ia, sib):%d);
 blr printf
 mva r0, ia
-//blr sort	   // sorts ia
+blr sort	   // sorts ia
 mov r2, #0
 blr numelems	   // numelems on r0, which should be ia
 str r0, [sp, 4]    // stores numelems in n, which is sp, 4
@@ -399,7 +399,7 @@ adi r4, r4, 1	   // i++
 bal for_loop
 .label end_for_loop
 mva r0, sia
-//blr sort	   // sorts sia
+blr sort	   // sorts sia
 blr numelems
 str r0, [sp, 4]    // stores number of elements in sia in n
 mva r4, #0 	   // silly counter
