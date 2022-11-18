@@ -91,12 +91,17 @@ mov r15, r14       // return
 .label cmp_arrays
 //mov r0, #1
 sbi sp, sp, 16     // Allocate stack, sp=r13
+str r0, [r13]	   // stores r0 in r13?
+str lr, [r13,4]	   // puts link register
+str r1, [r13,8]
+str lr, [r13,12]
 blr sum_array	   // first call to sum_array for the first array // call sum_array two times
 mov r3, r0	   // puts answer of sum_array into r3, this will be our s1
+str r0, [r1]
 mov r0, r1	   // put second array into r0
 blr sum_array      // second call to sum_array for second array
-mov r1, r3
-cmp r0, r1
+mov r1, r3	   // moves r3 into r1
+cmp r0, r1	   // comares s2 to s1
 beq cmp_equals     // if equal branch to .equals label
 bne cmp_not_equal  // else branch to this one instead
 .label cmp_equals
@@ -160,7 +165,7 @@ mov r15, r14       // return
 sbi sp, sp, 16     // Allocate stack
 blr numelems       // count elements in ia[] count is currently in r2
 add sp, sp, 16	   //smallest reset
-sbi sp, sp 16
+sbi sp, sp, 16
 mov r0, r13 	   //reset r0 to beginning of ia[]
 .label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4
@@ -193,12 +198,9 @@ sbi sp, sp, 16     // Allocate stack, sb = r13
 str r0, [r13]	//gusty add
 str lr, [r13,4]//gusty add
 blr numelems       // count elements in ia[]
-
 //mov r0, r13	   // hopefully restores r0 to its first position
 ldr lr, [r13,4]//gusty add
-mov r0, [r13]
-
-
+mov r0, r13
 add sp, sp, 16	   // reallocates stack
 mov r0, r13	   // hopefully restores r0 to first position
 mov r3, r2	   // puts count into r3
@@ -344,6 +346,7 @@ str r0, [sp, 8]    // store return value in sm1
 mva r0, sia        // put address of sia in r0
 mva r1, sib        // put address of sib in r1
 .label break_main
+
 blr cmp_arrays
 str r0, [sp, 0]
 mva r0, fmt3	   // r1 is address of format string, r0 will 
