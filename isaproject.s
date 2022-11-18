@@ -201,14 +201,14 @@ str r5, [r13, 4]   //will be used as j
 mov r5, #0	   //int j = 0
 str r6, [r13, 8]   //will be used as temp
 str lr, [r13, 12]  //store link ringister
-<<<<<<< HEAD
-str r10 [r13, 28] //will hold beginning of ia
-ldr r10, r0		//grab ia[0]
+
+str r10, [r13, 28] //will hold beginning of ia
+ldr r10, [r0]		//grab ia[0]
 str r8, [r13, 16]   //this will keep index of ia[j]
-ldr r8, r10          //set ia[j] to ia[0]
-=======
+ldr r8, [r10]          //set ia[j] to ia[0]
+
 //mov r0, [r13, 16]   //hopefully copies beginning index of r0 into that spot please do this 
->>>>>>> 2bb05d6e2a8e89dac523ef06e9b7db416744d5e6
+
 str r7, [r13,20]    //used as s
 str r9, [r13, 24]    //will be used as ia[j]
 str r11, [r13, 32]   //will be used as ia[j+1]
@@ -219,17 +219,17 @@ ldr r9, [r8],#4   //loads ia[j] into r9, post increment 4 lets r8 go to next ite
 ldr r11, [r8]		//loads ia[j+1] into r11
 cmp r9, r11 //compare values
 ble normcase //if r9 <= r11, skip 
-ldr r6, r9 //int t = ia[j]
-ldr r9, r11 //ia[j] = ia[j+1]
-ldr r11, r6 //ia[j+1] = t
+ldr r6, [r9] //int t = ia[j]
+ldr r9, [r11] //ia[j] = ia[j+1]
+ldr r11, [r6] //ia[j+1] = t
 .label normcase
 mov r7, r2 //set r7 to s
-sub r7, r7, 1 //s-1
+sub r7, r7, #1 //s-1
 sub r7, r7, r4 //s-i
-add r5, r5, 1//j++
-cmp r7, r5//if s is greater than j
+add r5, r5, #1 //j++
+cmp r7, r5 //if s is greater than j
 bgt loop2 //loop again
-ldr r8, r10          //set ia[j] to ia[0] reset for next loop2
+ldr r8, [r10]          //set ia[j] to ia[0] reset for next loop2
 add r4, r4, #1        //i++
 cmp r2, r4             //if i<size
 bgt loop		//loop again
@@ -240,8 +240,8 @@ ldr lr,[r13,12]
 ldr r8,[r13,16]
 ldr r7,[r13,20]
 ldr r9,[r13,24]
-ldr r10[r13,28]
-ldr r11[r13,32]
+ldr r10,[r13,28]
+ldr r11,[r13,32]
 add sp, sp, 36		   // Deallocate stack
 mov r15, r14       // return - sort is a void function
 
