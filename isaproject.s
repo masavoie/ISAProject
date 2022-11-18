@@ -166,16 +166,13 @@ sbi sp, sp, 8     // Allocate stack
 str r0,[r13,0]    //store beginning index
 str lr,[r13,4]    //store link register
 blr numelems       // count elements in ia[] count is currently in r2
-<<<<<<< HEAD
 ldr r0,[r13,0]     //restore r0 to the beginning index
 ldr lr,[r13,4]     //restore link register
 add sp, sp, 8	   //smallest reset
 sbi sp, sp 16       //allocate new stack
-=======
 add sp, sp, 16	   //smallest reset
 sbi sp, sp, 16
 mov r0, r13 	   //reset r0 to beginning of ia[]
->>>>>>> d0993cb0ef7d1d8247a04f4c8c957957c353a9f9
 .label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4
 .label loop2
@@ -360,6 +357,10 @@ blr cmp_arrays
 str r0, [sp, 0]
 mva r0, fmt3	   // r1 is address of format string, r0 will 
 blr printf	   // printf(cmp_arrays(sia, sib): %d)
+mva r1, sia	   // put address of sia into r1
+blr cmp_arrays
+str r0, [sp,0]
+mva r0, fmt4	   // printf("cmp_arrays(sia, sia): %d");
 
 // Do not deallocate stack.
 // This leaves r13 with an address that can be used to dump memory
