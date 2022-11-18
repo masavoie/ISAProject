@@ -52,6 +52,8 @@
 .string //factorial(4) ia: %d
 .label fmt11
 .string //factorial(7) ia: %d
+.label fmt12
+.string //s1: %d, s2: %d
 .text 0x300 
 //sum_array DONE
 // r0 has ia - address of null terminated array
@@ -97,26 +99,21 @@ mov r15, r14       // return
 .label cmp_arrays
 //mov r0, #1
 sbi sp, sp, 16     // Allocate stack, sp=r13
-str r0, [r13]	   // stores r0 in r13?
-str lr, [r13,4]	   // puts link register
-str r1, [r13,8]
-str lr, [r13,12]
-blr sum_array	   // first call to sum_array for the first array // call sum_array two times
-mov r3, r0	   // puts answer of sum_array into r3, this will be our s1
-str r0, [r1]
-mov r0, r1	   // put second array into r0
-blr sum_array      // second call to sum_array for second array
-mov r1, r3	   // moves r3 into r1
-cmp r0, r1	   // comares s2 to s1
-beq cmp_equals     // if equal branch to .equals label
-bne cmp_not_equal  // else branch to this one instead
-.label cmp_equals
-mov r0, 1          // puts 1 into r0 to return 1, or that they are equal
-bal cmp_return     // skips the cmp_not_equal
-.label cmp_not_equal
-mov r0, -1         // hardcode to return -1 for not equal
-add sp, sp, 16	   // Deallocate stack by adding the values back to sp
-.label cmp_return
+blr sum_array	   // calls sumarray for ia1
+mov r2, r0	   // puts answer into r2
+mva r0, r1	   // moves address of ia2 into r0
+blr sum_array	   // calls sum_array for ia2
+mov r3, r0	   // puts result into r3
+cmp r2, r3	   // compares r2 and r3, the two sum_array
+bne not_equals
+mva r0, fmt12	   // moves fmt12 into r0
+blr printf	   // printf(s1: %d, s2: %d)
+mov r0, #0	   // puts 0 into r0 to return
+bal skip_not
+.label not_equals
+mov r0, #-1	   // puts -1 into r0 to return
+.label skip_not
+add sp, sp, 16     // deallocates stack
 mov r15, r14       // return
 
 .text 0x500 
@@ -278,32 +275,6 @@ mov r15, r14       // return
 //     sm1 = smallest(sia);
 //     cav =cmp_arrays(sia, sib);
 // }
-
-// needs to implement the following:
-//	cav = cmp_arrays(ia, sib);
-//	printf("cmp_arrays(ia, sia): %d\n", cav);	fmt5
-//	sort(ia);
-//	n = numelemss(ia);
-//	for (int i = 0; i < n ; i++){
-//		printf("ia[%d]: %d\n", 1, sia[i]);	fmt6
-//	}
-//	sm1 = smallest(ia);
-//	sm2 = smallest(sia);
-//	printf("smallest(ia): %d\n", sm1);		fmt7
-//	printf("smallest(sia): %d\n", sm2);		fmt8
-//	if (sm1 != ia[0]){
-//		printf("Something bad\n");		fmt2
-//	}else{
-//		printf("Nice sort and smallest\n");	fmt9
-//	}if(sm2 != sia[0]){
-//		printf("Something bad\n");		fmt2
-//	}else{
-//		printf("Nice sort and smallest\n");	fmt9
-//	}
-//	n = factorial(4);
-//	printf("factorial(4) ia: %d\n", n);		fmt10
-//	n = factorial(7);
-//	printf("factorial(7) ia: %d\n", n);		fmt10
 .label main
 sbi sp, sp, 16     // allocate space for stack, sp = r13
                    // [sp,0] is int cav
