@@ -157,11 +157,14 @@ mov r15, r14       // return
 //		} closes outer for loop
 //	} ends function
 .label sort			//dude next to me was saying something about checking if the beginning is 0
-sbi sp, sp, 16     // Allocate stack
+sbi sp, sp, 8     // Allocate stack
+str r0,[r13,0]    //store beginning index
+str lr,[r13,4]    //store link register
 blr numelems       // count elements in ia[] count is currently in r2
-add sp, sp, 16	   //smallest reset
-sbi sp, sp 16
-mov r0, r13 	   //reset r0 to beginning of ia[]
+ldr r0,[r13,0]     //restore r0 to the beginning index
+ldr lr,[r13,4]     //restore link register
+add sp, sp, 8	   //smallest reset
+sbi sp, sp 16       //allocate new stack
 .label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4
 .label loop2
