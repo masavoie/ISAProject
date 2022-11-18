@@ -8,6 +8,12 @@
 .label printf
 
 .data 0x100
+.label ia
+2
+3
+5
+1
+0
 .label sia
 50
 43
@@ -33,7 +39,7 @@
 .label fmt4
 .string //cmp_arrays(sia, sia): %d
 .label fmt5
-.string //cmp_arrays(ia, sia): %d
+.string //cmp_arrays(ia, sib): %d
 .label fmt6
 .string //ia[%d]: %d
 .label fmt7
@@ -275,9 +281,6 @@ mov r15, r14       // return
 // }
 
 // needs to implement the following:
-//	sib[0] = 4;
-//	cav = cmp_arrays(sia, sia);
-//	printf("cmp_arrays(sia, sia): %d\n", cav);	fmt4
 //	cav = cmp_arrays(ia, sib);
 //	printf("cmp_arrays(ia, sia): %d\n", cav);	fmt5
 //	sort(ia);
@@ -312,6 +315,7 @@ mov r0, 0
 str r0, [sp, 0]    // cav = 0;
 str r0, [sp, 4]    // n = 0;
 str r0, [sp, 8]    // sm1 = 0;
+str r0, [sp, 12]   // sm2 = 0;
 // printf("Something bad");
 // Kernel call to printf expects parameters
 // r1 - address of format string - "Something bad"
@@ -365,7 +369,93 @@ mva r1, sia	   // put address of sia into r1
 blr cmp_arrays
 str r0, [sp,0]
 mva r0, fmt4	   // printf("cmp_arrays(sia, sia): %d");
-
+mva r0, sib        // puts sib into r0
+mov r0, #4         // put 4 into sib[0]
+blr cmp_arrays
+str r0, [sp, 0]
+mva r0, fmt3
+blr printf	   // printf(cmp_arrays(sia, sib): %d);
+mva r0, ia	   // puts ia into r0
+mva r1, sib	   // puts sib into r1
+blr cmp_arrays
+str r0, [sp, 0]
+mva r0, fmt5	   // printf(cmp_arrays(ia, sib):%d);
+blr printf
+mva r0, ia
+blr sort	   // sorts ia
+blr numelems	   // numelems on r0, which should be ia
+str r0, [sp, 4]    // stores numelems in n, which is sp, 4
+mva r4, #0	   // emptying to use a counter
+mva r5, ia
+.label for_loop
+cmp r4, r0
+bge end_for_loop
+mva r1, fmt6       // fmt6 to r1
+mov r2, r4	   // i to r2
+ldr r3, [r5], r0   // ia[i] to r3
+ker #0x11	   // ker call to printf
+adi r4, r4, 1	   // i++
+bal for_loop
+.label end_for_loop
+mva r0, sia
+blr sort	   // sorts sia
+blr numelems
+str r0, [sp, 4]    // stores number of elements in sia in n
+mva r4, #0 	   // silly counter
+.label sec_for_loop
+cmp r4, r0
+bge end_sec_for_loop
+mva r1, fmt1	   // stores fmt1 to r1
+mov r2, r4	   // i to r2
+ldr r3, [r5], r0   // ia[i] to r3
+ker #0x11	   // ker call to printf
+adi r4, r4, 1	   // i++
+bal sec_for_loop
+.label end_sec_for_loop
+mva r0, ia
+blr smallest	   // calls smallest on ia
+str r0, [sp, 8]	   // stores in sm1
+mva r0, sia	   // stores sia in r0
+blr smallest       // calls smallest on sia
+str r0, [sp, 12]   // stores in sm2
+mva r0, fmt7
+blr printf	   // printf(smallest(ia))
+mva r0, fmt8
+blr printf	   // printf(smallest(sia)
+mva r0, ia	   // loads ia into r0
+ldr r1, [r0,#0]	   // should be ia[0]
+ldr r0, [sp, 8]	   // loads sm1 into r0
+cmp r0, r1
+bne some_bad
+mva r0, fmt9
+blr printf	   // printf(nice and smallest)
+bal skip_bad
+.label some_bad
+mva r0, fmt2
+blr printf	   // printf(something bad)
+.label skip_bad
+mva r0, sia        // loads sia into r0
+ldr r1, [r0,#0]    // loads sia[0] into
+ldr r0, [sp, 12]   // loads sm2 into r0
+cmp r0, r1
+bne some_bad_2
+mva r0, fmt9
+blr printf	   // printf(nice and smallest)
+bal skip_bad_2
+.label some_bad_2
+mva r0, fmt2
+blr printf	   // printf(something bad)
+.label skip_bad_2
+mva r0, #4
+blr factorial
+str r0, [sp, 4]
+mva r0, fmt10
+blr printf	   // printf(factorial(4))
+mva r0, #7
+blr factorial
+str r0, [sp, 4]
+mva r0, fmt11
+blr printf	   // printf(factorial(7))
 // Do not deallocate stack.
 // This leaves r13 with an address that can be used to dump memory
 // > d 0x4ff0 
