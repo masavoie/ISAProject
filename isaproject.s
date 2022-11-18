@@ -175,20 +175,22 @@ blr numelems       // count elements in ia[] count is currently in r2
 ldr r0,[r13,0]     //restore r0 to the beginning index
 ldr lr,[r13,4]     //restore link register
 add sp, sp, 8	   //smallest reset
-sbi sp, sp, 16     //allocate new stack
+sbi sp, sp, 24     //allocate new stack
 str r4, [r13, 0]   //will be used as i
-mov r4, #0
+mov r4, #0	   //int i = 0
 str r5, [r13, 4]   //will be used as j
-mov r5, #0
+mov r5, #0	   //int j = 0
 str r6, [r13, 8]   //will be used as temp
 str lr, [r13, 12]  //store link ringister
+mov r0, [r13, 16]   //hopefully copies beginning index of r0 into that spot please do this 
+str r7, [r13,20]    //used as s
 .label loop        //begin nested loops
 ldr r1, [r0],#4    // loads ia[i] into r1, post increment 4 lets r0 go to address of next item in ia
 .label loop2
 
 blt loop2
-sub r2, r2, #1        //size= size-1
-cmp r2, #0             //if size > 0
+add r4, r4, #1        //i++
+cmp r7, r4             //if i<size
 bgt loop		//loop again
 add sp, sp, 16		   // Deallocate stack
 mov r15, r14       // return - sort is a void function
